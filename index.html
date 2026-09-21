@@ -1,6 +1,4 @@
-from pathlib import Path
-
-html = r'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -9,58 +7,134 @@ html = r'''<!DOCTYPE html>
 
 <style>
 html,body{
-    margin:0;height:100%;background:#000;overflow:hidden;color:#ddd;
-    font-family:"Courier New",monospace
+    margin:0;
+    height:100%;
+    background:#000;
+    overflow:hidden;
+    color:#ddd;
+    font-family:"Courier New",monospace;
 }
+
 video{
-    position:fixed;inset:0;margin:auto;width:100%;height:100%;object-fit:contain
+    position:fixed;
+    inset:0;
+    margin:auto;
+    width:100%;
+    height:100%;
+    object-fit:contain;
 }
+
 #fx{
-    position:fixed;inset:0;
-    background:repeating-linear-gradient(0deg,rgba(255,255,255,.04),rgba(255,255,255,.04) 2px,transparent 2px,transparent 4px);
-    pointer-events:none;animation:flick .12s infinite;z-index:5
+    position:fixed;
+    inset:0;
+    background:repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,.04),
+        rgba(255,255,255,.04) 2px,
+        transparent 2px,
+        transparent 4px
+    );
+    pointer-events:none;
+    animation:flick .12s infinite;
+    z-index:5;
 }
-@keyframes flick{50%{opacity:.9}51%{opacity:.8}}
+
+@keyframes flick{
+    50%{opacity:.9}
+    51%{opacity:.8}
+}
 
 #intro{
-    position:absolute;inset:0;display:flex;flex-direction:column;
-    justify-content:center;align-items:center;z-index:10
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
 }
+
 button{
-    background:#000;border:1px solid #888;color:#fff;padding:14px 28px;
-    letter-spacing:4px;font-family:"Courier New",monospace;cursor:pointer
+    background:#000;
+    border:1px solid #888;
+    color:#fff;
+    padding:14px 28px;
+    letter-spacing:4px;
+    font-family:"Courier New",monospace;
+    cursor:pointer;
 }
+
 #panel{
-    display:none;position:absolute;left:8%;bottom:8%;white-space:pre-line;
-    font-size:20px;text-shadow:0 0 8px #fff;z-index:10
+    display:none;
+    position:absolute;
+    left:8%;
+    bottom:8%;
+    white-space:pre-line;
+    font-size:20px;
+    text-shadow:0 0 8px #fff;
+    z-index:10;
 }
-.gl{animation:g .09s infinite}
+
+.gl{
+    animation:g .09s infinite;
+}
+
 @keyframes g{
     0%,100%{transform:translate(0)}
     25%{transform:translate(1px,-1px)}
     50%{transform:translate(-1px,1px)}
     75%{transform:translate(1px,0)}
 }
-.small{opacity:.7}
 
-/* TERMINAL */
+.small{
+    opacity:.7;
+}
+
+/* =========================================================
+   TERMINAL
+========================================================= */
+
 #terminalScreen{
-    display:none;position:fixed;inset:0;z-index:30;background:#000;
-    overflow:auto;padding:7vh 8vw
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:30;
+    background:#000;
+    overflow:auto;
+    padding:7vh 8vw;
 }
-#terminal{
-    width:min(780px,92vw);margin:0 auto;color:#b8d3bf;
-    font-size:clamp(11px,1.5vw,16px);line-height:1.55;letter-spacing:1.4px;
-    white-space:pre-wrap;text-align:left;text-shadow:0 0 7px rgba(180,220,190,.28)
-}
-#cursor{
-    display:inline-block;width:.65em;height:1.05em;margin-left:3px;
-    vertical-align:-.15em;background:#b8d3bf;
-    animation:blink .75s steps(1,end) infinite
-}
-@keyframes blink{0%,48%{opacity:1}49%,100%{opacity:0}}
 
-.corrupt{animation:terminalGlitch .08s steps(2,end) 4}
+#terminal{
+    width:min(780px,92vw);
+    margin:0 auto;
+    color:#b8d3bf;
+    font-size:clamp(11px,1.5vw,16px);
+    line-height:1.55;
+    letter-spacing:1.4px;
+    white-space:pre-wrap;
+    text-align:left;
+    text-shadow:0 0 7px rgba(180,220,190,.28);
+}
+
+#cursor{
+    display:inline-block;
+    width:.65em;
+    height:1.05em;
+    margin-left:3px;
+    vertical-align:-.15em;
+    background:#b8d3bf;
+    animation:blink .75s steps(1,end) infinite;
+}
+
+@keyframes blink{
+    0%,48%{opacity:1}
+    49%,100%{opacity:0}
+}
+
+.corrupt{
+    animation:terminalGlitch .08s steps(2,end) 4;
+}
+
 @keyframes terminalGlitch{
     0%{transform:translate(0)}
     25%{transform:translate(-2px,1px)}
@@ -70,8 +144,17 @@ button{
 }
 
 @media(max-width:600px){
-    #panel{left:6%;right:6%;bottom:7%;font-size:14px}
-    #terminalScreen{padding:5vh 6vw}
+
+    #panel{
+        left:6%;
+        right:6%;
+        bottom:7%;
+        font-size:14px;
+    }
+
+    #terminalScreen{
+        padding:5vh 6vw;
+    }
 }
 </style>
 </head>
@@ -85,39 +168,81 @@ button{
 <div id="fx"></div>
 
 <div id="intro">
+
     <div>TRANSMISSION</div>
+
     <h1>004</h1>
-    <button id="revealBtn">REVEAL</button>
+
+    <button id="revealBtn">
+        REVEAL
+    </button>
+
 </div>
 
+
 <div id="panel">
+
     <div id="term"></div>
+
     <div id="rest" style="display:none">
-        <div class="gl">SIGNAL RESTORED</div>
+
+        <div class="gl">
+            SIGNAL RESTORED
+        </div>
+
         <div class="small">NODE........ONLINE
 ARCHIVE.....004
 ORIGIN......UNKNOWN
 INTEGRITY...92.4%
 CHECKSUM....A7-11-XC</div>
+
     </div>
+
 </div>
+
 
 <div id="terminalScreen">
-    <div id="terminal"><span id="terminalText"></span><span id="cursor"></span></div>
+
+    <div id="terminal">
+        <span id="terminalText"></span><span id="cursor"></span>
+    </div>
+
 </div>
 
+
 <audio id="a" loop>
-    <source src="TRANSMISSION_004_SOUND.mp3" type="audio/mpeg">
+
+    <source
+        src="TRANSMISSION_004_SOUND.mp3"
+        type="audio/mpeg">
+
 </audio>
 
+
 <script>
+
+/* =========================================================
+   RECOVERY SEQUENCE
+========================================================= */
+
 const seq=[
+
     "RECOVERING...",
+
     "RECOVERING...\n\n█░░░░░░░░░ 12%",
+
     "RECOVERING...\n\n███░░░░░░░ 36%",
+
     "RECOVERING...\n\n██████░░░░ 71%",
+
     "RECOVERING...\n\n██████████ 100%"
+
 ];
+
+
+/* =========================================================
+   TRANSMISSION
+========================================================= */
 
 const transmission=`ANOMALY DETECTED
 
@@ -192,9 +317,11 @@ THE VALUE PERSISTS.
 --------------------------------
 
 ANIMAL PRESENCE FOUND.
+
 THEY OCCUR
 WHERE THE CALL
 IS PRESENT.
+
 THEY ARE THE SIGNAL ITSELF
 
 
@@ -206,6 +333,7 @@ f₀ = 40 Hz
 FORM → MULTIPLE
 
 ORIGIN POINT
+
 --------------------------------------------------))) 1945.07.16 // 05:29:45
 
 SIGNAL AGE...........81 YEARS
@@ -218,82 +346,223 @@ WE ARE LEGION.
 
 END OF TRANSMISSION.`;
 
-const intro=document.getElementById("intro");
-const revealBtn=document.getElementById("revealBtn");
-const audio=document.getElementById("a");
-const panel=document.getElementById("panel");
-const term=document.getElementById("term");
-const rest=document.getElementById("rest");
-const screen=document.getElementById("terminalScreen");
-const target=document.getElementById("terminalText");
-const terminal=document.getElementById("terminal");
 
-revealBtn.addEventListener("click",go);
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const intro=
+    document.getElementById("intro");
+
+const revealBtn=
+    document.getElementById("revealBtn");
+
+const audio=
+    document.getElementById("a");
+
+const panel=
+    document.getElementById("panel");
+
+const term=
+    document.getElementById("term");
+
+const rest=
+    document.getElementById("rest");
+
+const screen=
+    document.getElementById("terminalScreen");
+
+const target=
+    document.getElementById("terminalText");
+
+const terminal=
+    document.getElementById("terminal");
+
+
+/* =========================================================
+   REVEAL
+========================================================= */
+
+revealBtn.addEventListener(
+    "click",
+    go
+);
+
 
 function go(){
-    intro.style.display="none";
+
+    intro.style.display=
+        "none";
+
+    /*
+       Le son démarre au clic.
+       Son volume n'est ensuite jamais modifié.
+    */
+
     audio.play().catch(()=>{});
-    panel.style.display="block";
+
+    panel.style.display=
+        "block";
 
     let i=0;
-    term.textContent=seq[0];
+
+    term.textContent=
+        seq[0];
+
 
     const iv=setInterval(()=>{
+
         i++;
+
         if(i<seq.length){
-            term.textContent=seq[i];
+
+            term.textContent=
+                seq[i];
+
         }
+
+
         if(i===seq.length-1){
+
             clearInterval(iv);
+
+
             setTimeout(()=>{
-                term.style.display="none";
-                rest.style.display="block";
-                setTimeout(beginTerminal,2600);
+
+                term.style.display=
+                    "none";
+
+                rest.style.display=
+                    "block";
+
+
+                setTimeout(
+                    beginTerminal,
+                    2600
+                );
+
             },800);
+
         }
+
     },800);
+
 }
+
+
+/* =========================================================
+   OPEN TERMINAL
+========================================================= */
 
 function beginTerminal(){
-    panel.style.display="none";
-    screen.style.display="block";
-    audio.volume=.22;
+
+    panel.style.display=
+        "none";
+
+    screen.style.display=
+        "block";
+
+    /*
+       IMPORTANT :
+       aucune modification du volume ici.
+       Le son continue exactement
+       au même niveau.
+    */
+
     typeTransmission();
+
 }
+
+
+/* =========================================================
+   TYPEWRITER
+========================================================= */
 
 function typeTransmission(){
+
     target.textContent="";
+
     let i=0;
 
+
     function typeNext(){
-        if(i>=transmission.length) return;
 
-        const ch=transmission[i++];
-        target.textContent+=ch;
+        if(i>=transmission.length){
 
-        screen.scrollTop=screen.scrollHeight;
+            return;
 
-        let delay=18;
-        if(ch==="\n") delay=80;
-        if(ch===".") delay=32;
-
-        if(Math.random()<.02){
-            delay+=90+Math.random()*170;
-            terminal.classList.add("corrupt");
-            setTimeout(()=>terminal.classList.remove("corrupt"),320);
         }
 
-        setTimeout(typeNext,delay);
+
+        const ch=
+            transmission[i++];
+
+
+        target.textContent+=
+            ch;
+
+
+        screen.scrollTop=
+            screen.scrollHeight;
+
+
+        let delay=18;
+
+
+        if(ch==="\n"){
+
+            delay=80;
+
+        }
+
+
+        if(ch==="."){
+
+            delay=32;
+
+        }
+
+
+        /*
+           Micro perturbations aléatoires
+        */
+
+        if(Math.random()<.02){
+
+            delay+=
+                90+
+                Math.random()*170;
+
+
+            terminal.classList.add(
+                "corrupt"
+            );
+
+
+            setTimeout(()=>{
+
+                terminal.classList.remove(
+                    "corrupt"
+                );
+
+            },320);
+
+        }
+
+
+        setTimeout(
+            typeNext,
+            delay
+        );
+
     }
 
+
     typeNext();
+
 }
+
 </script>
 
 </body>
 </html>
-'''
-
-out = Path("/mnt/data/index_transmission004_CORRIGE.html")
-out.write_text(html, encoding="utf-8")
-print("Fichier HTML corrigé créé :", out)
