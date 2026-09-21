@@ -1,43 +1,316 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
-<title>TRANSMISSION // 004</title>
-<style>
-html,body{margin:0;height:100%;background:#000;overflow:hidden;color:#ddd;font-family:Courier New,monospace}
-video{position:fixed;inset:0;margin:auto;max-width:100%;max-height:100%}
-#fx{position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.04),rgba(255,255,255,.04)2px,transparent 2px,transparent 4px);pointer-events:none;animation:flick .12s infinite}
-@keyframes flick{50%{opacity:.9}51%{opacity:.8}}
-#intro,#ui{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center}
-button,a{background:#000;border:1px solid #888;color:#fff;padding:14px 28px;letter-spacing:4px;text-decoration:none}
-#panel{display:none;position:absolute;left:8%;bottom:8%;white-space:pre-line;font-size:20px;text-shadow:0 0 8px #fff}
-.gl{animation:g .09s infinite}
-@keyframes g{0%,100%{transform:translate(0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,0)}}
-.small{opacity:.7}
-</style></head><body>
-<video autoplay muted loop playsinline><source src="TRANSMISSION_004_VIDEO.mp4" type="video/mp4"></video>
-<div id="fx"></div>
-<div id="intro"><div>TRANSMISSION</div><h1>004</h1><button onclick="go()">REVEAL</button></div>
-<div id="panel">
-<div id="term"></div>
-<div id="rest" style="display:none">
-<div class="gl">SIGNAL RESTORED</div>
-<div class="small">NODE........ONLINE
-ARCHIVE.....004
-ORIGIN......UNKNOWN
-INTEGRITY...92.4%
-CHECKSUM....A7-11-XC</div><br>
-<a href="https://youtu.be/yl_W-f7f3JA" target="_blank">RECOVER SIGNAL</a>
-</div></div>
-<audio id="a" loop><source src="TRANSMISSION_004_SOUND.mp3"></audio>
-<script>
-const seq=[
-"RECOVERING...",
-"RECOVERING...\n\n█░░░░░░░░░ 12%",
-"RECOVERING...\n\n███░░░░░░░ 36%",
-"RECOVERING...\n\n██████░░░░ 71%",
-"RECOVERING...\n\n██████████ 100%"
-];
-function go(){
-intro.style.display='none';a.play();panel.style.display='block';
-let i=0;let t=document.getElementById('term');
-let iv=setInterval(()=>{t.textContent=seq[i++];if(i==seq.length){clearInterval(iv);setTimeout(()=>rest.style.display='block',800)}},800)
+from pathlib import Path
+
+src = Path("/mnt/data/Texte collé(8).txt")
+html = src.read_text(encoding="utf-8")
+
+# Add terminal CSS before mobile section
+marker = """/* =========================================================
+   MOBILE
+========================================================= */"""
+terminal_css = r"""
+/* =========================================================
+   TERMINAL / POST-SIGNAL MESSAGE
+========================================================= */
+#terminalScreen{
+    position:fixed;
+    inset:0;
+    z-index:50;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:#000;
+    padding:6vh 7vw;
+    overflow:auto;
 }
-</script></body></html>
+
+#terminalScreen.active{
+    display:flex;
+}
+
+#terminal{
+    width:min(760px,92vw);
+    min-height:70vh;
+    color:#b8d3bf;
+    font-family:"Courier New",monospace;
+    font-size:clamp(11px,1.45vw,15px);
+    line-height:1.55;
+    letter-spacing:1.4px;
+    white-space:pre-wrap;
+    text-align:left;
+    text-shadow:0 0 7px rgba(170,220,180,.22);
+}
+
+#terminalCursor{
+    display:inline-block;
+    width:.65em;
+    height:1.05em;
+    margin-left:3px;
+    vertical-align:-.15em;
+    background:#b8d3bf;
+    animation:cursorBlink .75s steps(1,end) infinite;
+}
+
+@keyframes cursorBlink{
+    0%,48%{opacity:1}
+    49%,100%{opacity:0}
+}
+
+#player.fadeOut{
+    opacity:0;
+    transform:scale(.985);
+    transition:opacity 1.4s ease,transform 1.4s ease;
+}
+
+#background.fadeOut{
+    opacity:.18;
+    transition:opacity 1.4s ease;
+}
+"""
+html = html.replace(marker, terminal_css + "\n" + marker)
+
+# Add terminal HTML before audio section
+audio_marker = """<!-- =========================================================
+     AUDIO
+========================================================= -->"""
+terminal_html = r"""
+<!-- =========================================================
+     TERMINAL MESSAGE
+========================================================= -->
+
+<div id="terminalScreen">
+    <div id="terminal"><span id="terminalText"></span><span id="terminalCursor"></span></div>
+</div>
+
+"""
+html = html.replace(audio_marker, terminal_html + audio_marker)
+
+# Add JS refs after glyph ref
+needle = """const glyph =
+    document.getElementById("glyph");"""
+replacement = needle + r"""
+
+const player =
+    document.getElementById("player");
+
+const background =
+    document.getElementById("background");
+
+const terminalScreen =
+    document.getElementById("terminalScreen");
+
+const terminalText =
+    document.getElementById("terminalText");"""
+html = html.replace(needle, replacement)
+
+# Replace ended event block with terminal sequence
+start = html.index('audio.addEventListener(\n    "ended",')
+end_marker = '\n\n\n/* =========================================================\n   RANDOM GLITCHES'
+end = html.index(end_marker, start)
+
+new_ended = r'''audio.addEventListener(
+    "ended",
+    function(){
+
+        play.textContent =
+            "▶";
+
+        status.textContent =
+            "SIGNAL // TERMINATED";
+
+        progressFill.style.width =
+            "100%";
+
+        progressDot.style.left =
+            "100%";
+
+        setTimeout(
+            beginTerminalSequence,
+            1200
+        );
+
+    }
+);
+
+
+/* =========================================================
+   TERMINAL SEQUENCE
+========================================================= */
+
+const transmission = `ANOMALY DETECTED
+
+f₀ = 40.000 Hz
+T  = 0.025000 s
+
+λAIR   ≈ 8.575 m
+λWATER ≈ 38.25 m
+
+PHASE.............LOCKED
+SOURCE............UNRESOLVED
+ORIGIN............NONLOCAL
+
+
+CALCULATING...
+
+████████████████████ 100%
+
+
+TEMPORAL CORRELATION FOUND
+
+APOCALYPSE START
+))) 1945.07.16 (((
+   05:29:45 MWT 
+
+33°40′31″ N
+106°28′29″ W
+
+Δt = 0
+
+EVENT CLASS........UNKNOWN
+ENERGY.............DETECTED
+SIGNAL.............PERSISTENT
+
+
+f₀ = 40.000 Hz
+
+
+--------------------------------
+
+PROPAGATION MODEL
+
+AIR.................ACTIVE
+WATER...............ACTIVE
+BONE................ACTIVE
+UNKNOWN MEDIUM......ACTIVE
+
+
+--------------------------------
+
+RESPONSE DETECTED
+
+MASS................████████░░
+DEPTH...............██████████
+LIMBS...............████████░░
+WHITE...............██████████
+
+CLASSIFICATION......FAILED
+
+1 SIGNAL
+MULTIPLE FORMS
+MUTATIONS
+TRANSFORMATIONS
+RESILIENT FORM OF LIFE
+SOUNDS BENEATH UNDERSTANDING
+
+
+--------------------------------
+
+40.000
+
+THE VALUE PERSISTS.
+
+
+--------------------------------
+
+THEY DO NOT HEAR THE CALL.
+
+THEY OCCUR
+WHERE THE CALL
+IS PRESENT.
+
+
+--------------------------------
+
+f₀ = 40 Hz
+
+λ → ∞
+FORM → ?
+
+ORIGIN POINT
+1945.07.16 // 05:29:45
+
+SIGNAL AGE...........81 YEARS
+SIGNAL STATUS........ACTIVE
+
+
+DO NOT FOLLOW THE FORM.
+
+FOLLOW THE FREQUENCY.`;
+
+let terminalStarted = false;
+
+function beginTerminalSequence(){
+
+    if(terminalStarted){
+        return;
+    }
+
+    terminalStarted = true;
+
+    player.classList.add("fadeOut");
+    background.classList.add("fadeOut");
+
+    setTimeout(
+        function(){
+
+            player.style.display = "none";
+            terminalScreen.classList.add("active");
+            typeTransmission();
+
+        },
+        1450
+    );
+}
+
+
+function typeTransmission(){
+
+    terminalText.textContent = "";
+
+    let i = 0;
+
+    function typeNext(){
+
+        if(i >= transmission.length){
+            return;
+        }
+
+        const ch = transmission[i];
+
+        terminalText.textContent += ch;
+
+        i++;
+
+        const terminal =
+            document.getElementById("terminal");
+
+        terminal.scrollTop =
+            terminal.scrollHeight;
+
+        let delay = 18;
+
+        if(ch === "\n"){
+            delay = 90;
+        }
+
+        if(ch === "."){
+            delay = 35;
+        }
+
+        if(Math.random() < .018){
+            delay += 100 + Math.random() * 180;
+        }
+
+        setTimeout(
+            typeNext,
+            delay
+        );
+    }
+
+    typeNext();
+}
+'''
+html = html[:start] + new_ended + html[end:]
+
+out = Path("/mnt/data/SKIN_SIGNAL_40HZ.html")
+out.write_text(html, encoding="utf-8")
+print(out)
