@@ -1,142 +1,125 @@
 from pathlib import Path
 
-src = Path("/mnt/data/Texte collé(8).txt")
-html = src.read_text(encoding="utf-8")
+html = r'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TRANSMISSION // 004</title>
 
-# Add terminal CSS before mobile section
-marker = """/* =========================================================
-   MOBILE
-========================================================= */"""
-terminal_css = r"""
-/* =========================================================
-   TERMINAL / POST-SIGNAL MESSAGE
-========================================================= */
+<style>
+html,body{
+    margin:0;height:100%;background:#000;overflow:hidden;color:#ddd;
+    font-family:"Courier New",monospace
+}
+video{
+    position:fixed;inset:0;margin:auto;width:100%;height:100%;object-fit:contain
+}
+#fx{
+    position:fixed;inset:0;
+    background:repeating-linear-gradient(0deg,rgba(255,255,255,.04),rgba(255,255,255,.04) 2px,transparent 2px,transparent 4px);
+    pointer-events:none;animation:flick .12s infinite;z-index:5
+}
+@keyframes flick{50%{opacity:.9}51%{opacity:.8}}
+
+#intro{
+    position:absolute;inset:0;display:flex;flex-direction:column;
+    justify-content:center;align-items:center;z-index:10
+}
+button{
+    background:#000;border:1px solid #888;color:#fff;padding:14px 28px;
+    letter-spacing:4px;font-family:"Courier New",monospace;cursor:pointer
+}
+#panel{
+    display:none;position:absolute;left:8%;bottom:8%;white-space:pre-line;
+    font-size:20px;text-shadow:0 0 8px #fff;z-index:10
+}
+.gl{animation:g .09s infinite}
+@keyframes g{
+    0%,100%{transform:translate(0)}
+    25%{transform:translate(1px,-1px)}
+    50%{transform:translate(-1px,1px)}
+    75%{transform:translate(1px,0)}
+}
+.small{opacity:.7}
+
+/* TERMINAL */
 #terminalScreen{
-    position:fixed;
-    inset:0;
-    z-index:50;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    background:#000;
-    padding:6vh 7vw;
-    overflow:auto;
+    display:none;position:fixed;inset:0;z-index:30;background:#000;
+    overflow:auto;padding:7vh 8vw
 }
-
-#terminalScreen.active{
-    display:flex;
-}
-
 #terminal{
-    width:min(760px,92vw);
-    min-height:70vh;
-    color:#b8d3bf;
-    font-family:"Courier New",monospace;
-    font-size:clamp(11px,1.45vw,15px);
-    line-height:1.55;
-    letter-spacing:1.4px;
-    white-space:pre-wrap;
-    text-align:left;
-    text-shadow:0 0 7px rgba(170,220,180,.22);
+    width:min(780px,92vw);margin:0 auto;color:#b8d3bf;
+    font-size:clamp(11px,1.5vw,16px);line-height:1.55;letter-spacing:1.4px;
+    white-space:pre-wrap;text-align:left;text-shadow:0 0 7px rgba(180,220,190,.28)
+}
+#cursor{
+    display:inline-block;width:.65em;height:1.05em;margin-left:3px;
+    vertical-align:-.15em;background:#b8d3bf;
+    animation:blink .75s steps(1,end) infinite
+}
+@keyframes blink{0%,48%{opacity:1}49%,100%{opacity:0}}
+
+.corrupt{animation:terminalGlitch .08s steps(2,end) 4}
+@keyframes terminalGlitch{
+    0%{transform:translate(0)}
+    25%{transform:translate(-2px,1px)}
+    50%{transform:translate(2px,-1px)}
+    75%{transform:translate(-1px,0)}
+    100%{transform:translate(0)}
 }
 
-#terminalCursor{
-    display:inline-block;
-    width:.65em;
-    height:1.05em;
-    margin-left:3px;
-    vertical-align:-.15em;
-    background:#b8d3bf;
-    animation:cursorBlink .75s steps(1,end) infinite;
+@media(max-width:600px){
+    #panel{left:6%;right:6%;bottom:7%;font-size:14px}
+    #terminalScreen{padding:5vh 6vw}
 }
+</style>
+</head>
 
-@keyframes cursorBlink{
-    0%,48%{opacity:1}
-    49%,100%{opacity:0}
-}
+<body>
 
-#player.fadeOut{
-    opacity:0;
-    transform:scale(.985);
-    transition:opacity 1.4s ease,transform 1.4s ease;
-}
+<video autoplay muted loop playsinline>
+    <source src="TRANSMISSION_004_VIDEO.mp4" type="video/mp4">
+</video>
 
-#background.fadeOut{
-    opacity:.18;
-    transition:opacity 1.4s ease;
-}
-"""
-html = html.replace(marker, terminal_css + "\n" + marker)
+<div id="fx"></div>
 
-# Add terminal HTML before audio section
-audio_marker = """<!-- =========================================================
-     AUDIO
-========================================================= -->"""
-terminal_html = r"""
-<!-- =========================================================
-     TERMINAL MESSAGE
-========================================================= -->
-
-<div id="terminalScreen">
-    <div id="terminal"><span id="terminalText"></span><span id="terminalCursor"></span></div>
+<div id="intro">
+    <div>TRANSMISSION</div>
+    <h1>004</h1>
+    <button id="revealBtn">REVEAL</button>
 </div>
 
-"""
-html = html.replace(audio_marker, terminal_html + audio_marker)
+<div id="panel">
+    <div id="term"></div>
+    <div id="rest" style="display:none">
+        <div class="gl">SIGNAL RESTORED</div>
+        <div class="small">NODE........ONLINE
+ARCHIVE.....004
+ORIGIN......UNKNOWN
+INTEGRITY...92.4%
+CHECKSUM....A7-11-XC</div>
+    </div>
+</div>
 
-# Add JS refs after glyph ref
-needle = """const glyph =
-    document.getElementById("glyph");"""
-replacement = needle + r"""
+<div id="terminalScreen">
+    <div id="terminal"><span id="terminalText"></span><span id="cursor"></span></div>
+</div>
 
-const player =
-    document.getElementById("player");
+<audio id="a" loop>
+    <source src="TRANSMISSION_004_SOUND.mp3" type="audio/mpeg">
+</audio>
 
-const background =
-    document.getElementById("background");
+<script>
+const seq=[
+    "RECOVERING...",
+    "RECOVERING...\n\n█░░░░░░░░░ 12%",
+    "RECOVERING...\n\n███░░░░░░░ 36%",
+    "RECOVERING...\n\n██████░░░░ 71%",
+    "RECOVERING...\n\n██████████ 100%"
+];
 
-const terminalScreen =
-    document.getElementById("terminalScreen");
-
-const terminalText =
-    document.getElementById("terminalText");"""
-html = html.replace(needle, replacement)
-
-# Replace ended event block with terminal sequence
-start = html.index('audio.addEventListener(\n    "ended",')
-end_marker = '\n\n\n/* =========================================================\n   RANDOM GLITCHES'
-end = html.index(end_marker, start)
-
-new_ended = r'''audio.addEventListener(
-    "ended",
-    function(){
-
-        play.textContent =
-            "▶";
-
-        status.textContent =
-            "SIGNAL // TERMINATED";
-
-        progressFill.style.width =
-            "100%";
-
-        progressDot.style.left =
-            "100%";
-
-        setTimeout(
-            beginTerminalSequence,
-            1200
-        );
-
-    }
-);
-
-
-/* =========================================================
-   TERMINAL SEQUENCE
-========================================================= */
-
-const transmission = `ANOMALY DETECTED
+const transmission=`ANOMALY DETECTED
 
 f₀ = 40.000 Hz
 T  = 0.025000 s
@@ -156,9 +139,8 @@ CALCULATING...
 
 TEMPORAL CORRELATION FOUND
 
-APOCALYPSE START
-))) 1945.07.16 (((
-   05:29:45 MWT 
+--------------------------------------------------))) 1945.07.16
+-------------------------------------------------))) 05:29:45 MWT
 
 33°40′31″ N
 106°28′29″ W
@@ -168,7 +150,6 @@ APOCALYPSE START
 EVENT CLASS........UNKNOWN
 ENERGY.............DETECTED
 SIGNAL.............PERSISTENT
-
 
 f₀ = 40.000 Hz
 
@@ -196,14 +177,13 @@ CLASSIFICATION......FAILED
 
 1 SIGNAL
 MULTIPLE FORMS
-MUTATIONS
-TRANSFORMATIONS
-RESILIENT FORM OF LIFE
-SOUNDS BENEATH UNDERSTANDING
 
 
 --------------------------------
 
+40.000
+40.000
+40.000
 40.000
 
 THE VALUE PERSISTS.
@@ -211,11 +191,11 @@ THE VALUE PERSISTS.
 
 --------------------------------
 
-THEY DO NOT HEAR THE CALL.
-
+ANIMAL PRESENCE FOUND.
 THEY OCCUR
 WHERE THE CALL
 IS PRESENT.
+THEY ARE THE SIGNAL ITSELF
 
 
 --------------------------------
@@ -223,94 +203,97 @@ IS PRESENT.
 f₀ = 40 Hz
 
 λ → ∞
-FORM → ?
+FORM → MULTIPLE
 
 ORIGIN POINT
-1945.07.16 // 05:29:45
+--------------------------------------------------))) 1945.07.16 // 05:29:45
 
 SIGNAL AGE...........81 YEARS
 SIGNAL STATUS........ACTIVE
 
 
-DO NOT FOLLOW THE FORM.
+WE ARE TRIBE.
 
-FOLLOW THE FREQUENCY.`;
+WE ARE LEGION.
 
-let terminalStarted = false;
+END OF TRANSMISSION.`;
 
-function beginTerminalSequence(){
+const intro=document.getElementById("intro");
+const revealBtn=document.getElementById("revealBtn");
+const audio=document.getElementById("a");
+const panel=document.getElementById("panel");
+const term=document.getElementById("term");
+const rest=document.getElementById("rest");
+const screen=document.getElementById("terminalScreen");
+const target=document.getElementById("terminalText");
+const terminal=document.getElementById("terminal");
 
-    if(terminalStarted){
-        return;
-    }
+revealBtn.addEventListener("click",go);
 
-    terminalStarted = true;
+function go(){
+    intro.style.display="none";
+    audio.play().catch(()=>{});
+    panel.style.display="block";
 
-    player.classList.add("fadeOut");
-    background.classList.add("fadeOut");
+    let i=0;
+    term.textContent=seq[0];
 
-    setTimeout(
-        function(){
-
-            player.style.display = "none";
-            terminalScreen.classList.add("active");
-            typeTransmission();
-
-        },
-        1450
-    );
+    const iv=setInterval(()=>{
+        i++;
+        if(i<seq.length){
+            term.textContent=seq[i];
+        }
+        if(i===seq.length-1){
+            clearInterval(iv);
+            setTimeout(()=>{
+                term.style.display="none";
+                rest.style.display="block";
+                setTimeout(beginTerminal,2600);
+            },800);
+        }
+    },800);
 }
 
+function beginTerminal(){
+    panel.style.display="none";
+    screen.style.display="block";
+    audio.volume=.22;
+    typeTransmission();
+}
 
 function typeTransmission(){
-
-    terminalText.textContent = "";
-
-    let i = 0;
+    target.textContent="";
+    let i=0;
 
     function typeNext(){
+        if(i>=transmission.length) return;
 
-        if(i >= transmission.length){
-            return;
+        const ch=transmission[i++];
+        target.textContent+=ch;
+
+        screen.scrollTop=screen.scrollHeight;
+
+        let delay=18;
+        if(ch==="\n") delay=80;
+        if(ch===".") delay=32;
+
+        if(Math.random()<.02){
+            delay+=90+Math.random()*170;
+            terminal.classList.add("corrupt");
+            setTimeout(()=>terminal.classList.remove("corrupt"),320);
         }
 
-        const ch = transmission[i];
-
-        terminalText.textContent += ch;
-
-        i++;
-
-        const terminal =
-            document.getElementById("terminal");
-
-        terminal.scrollTop =
-            terminal.scrollHeight;
-
-        let delay = 18;
-
-        if(ch === "\n"){
-            delay = 90;
-        }
-
-        if(ch === "."){
-            delay = 35;
-        }
-
-        if(Math.random() < .018){
-            delay += 100 + Math.random() * 180;
-        }
-
-        setTimeout(
-            typeNext,
-            delay
-        );
+        setTimeout(typeNext,delay);
     }
 
     typeNext();
 }
-'''
-html = html[:start] + new_ended + html[end:]
+</script>
 
-out = Path("/mnt/data/SKIN_SIGNAL_40HZ.html")
+</body>
+</html>
+'''
+
+out = Path("/mnt/data/index_transmission004_CORRIGE.html")
 out.write_text(html, encoding="utf-8")
-print(out)
+print("Fichier HTML corrigé créé :", out)
